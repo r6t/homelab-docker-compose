@@ -1,0 +1,104 @@
+version: "3"
+services:
+  sabnzbd:
+    image: linuxserver/sabnzbd:latest
+    restart: always
+    environment:
+      TZ: "America/Los_Angeles"
+      PUID: "1001"
+      PGID: "0"
+    ports:
+      - "8081:8080"
+      - "9090:9090"
+    volumes:
+      - "/nas/config/sabnzbd:/config"
+      - "/nas/download/sabnzbd/complete:/downloads"
+      - "/nas/download/sabnzbd/downloading:/incomplete-downloads"
+  radarr:
+    depends_on: sabnzbd
+    image: linuxserver/radarr:latest
+    restart: always
+    environment:
+      TZ: "America/Los_Angeles"
+      PUID: "1001"
+      PGID: "0"
+    ports:
+      - "7878:7878"
+    volumes:
+      - "/nas/config/radarr:/config"
+      - "/nas/plex/movies:/movies"
+      - "/nas/download/sabnzbd/complete/movies:/downloads"
+  sonarr:
+    depends_on: sabnzbd
+    image: linuxserver/sonarr:latest
+    restart: always
+    environment:
+      TZ: "America/Los_Angeles"
+      PUID: "1001"
+      PGID: "0"
+    ports:
+      - "8989:8989"
+    volumes:
+      - "/nas/config/sonarr:/config"
+      - "/nas/plex/tv:/tv"
+      - "/nas/download/sabnzbd/complete:/downloads"
+  plex:
+    image: linuxserver/plex:latest
+    restart: always
+    environment:
+      TZ: "America/Los_Angeles"
+      PUID: "1001"
+      PGID: "0"
+      VERSION: latest
+    network_mode: "host"
+    volumes:
+      - "/nas/config/plex:/config"
+      - "/nas/plex/tv:/data/tvshows"
+      - "/nas/plex/movies:/data/movies"
+  openvpn:
+    image: kylemanna/openvpn:latest
+    # network_mode: "host"
+    ports:
+      - "1194:1194/udp"
+    environment:
+      TZ: "America/Los_Angeles"
+    cap_add:
+      - "NET_ADMIN"
+    volumes:
+      - "/nas/config/openvpn:/etc/openvpn"
+  appdaemon:
+    depends_on: hass
+    image: acockburn/appdaemon:latest
+    environment:
+      TZ: "America/Los_Angeles"
+    ports:
+      - "5050:5050"
+    volumes:
+      - "/nas/config/homeassistant:/conf"
+      - "/etc/localtime:/etc/localtime:ro"
+  hass:
+    image: homeassistant/home-assistant:latest
+    network_mode: "host"
+    environment:
+      TZ: "America/Los_Angeles"
+      PUID: "1001"
+      PGID: "0"
+    volumes:
+      - "/nas/config/homeassistant:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+  unifi-video:
+    image: pducharme/unifi-video-controller:latest
+    network_mode: "host"
+    environment:
+      TZ: "America/Los_Angeles"
+      PUID: "1001"
+      PGID: "0"
+      DEBUG: "1"
+    cap_add:
+      - "SYS_ADMIN"
+      - "DAC_READ_SEARCH"
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - "/nas/config/unifi-video:/var/lib/unifi-video"
+      - "/nas/config/unifi-video/video:/usr/lib/unifi-video/videos"
