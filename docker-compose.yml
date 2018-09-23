@@ -15,7 +15,8 @@ services:
       - "/nas/download/sabnzbd/complete:/downloads"
       - "/nas/download/sabnzbd/downloading:/incomplete-downloads"
   radarr:
-    depends_on: sabnzbd
+    depends_on:
+      - sabnzbd
     image: linuxserver/radarr:latest
     restart: always
     environment:
@@ -29,7 +30,8 @@ services:
       - "/nas/plex/movies:/movies"
       - "/nas/download/sabnzbd/complete/movies:/downloads"
   sonarr:
-    depends_on: sabnzbd
+    depends_on:
+      - sabnzbd
     image: linuxserver/sonarr:latest
     restart: always
     environment:
@@ -55,8 +57,10 @@ services:
       - "/nas/config/plex:/config"
       - "/nas/plex/tv:/data/tvshows"
       - "/nas/plex/movies:/data/movies"
+      - "/nas/plex/music:/data/music"
   openvpn:
     image: kylemanna/openvpn:latest
+    restart: always
     # network_mode: "host"
     ports:
       - "1194:1194/udp"
@@ -67,7 +71,9 @@ services:
     volumes:
       - "/nas/config/openvpn:/etc/openvpn"
   appdaemon:
-    depends_on: hass
+    restart: always
+    depends_on:
+      - hass
     image: acockburn/appdaemon:latest
     environment:
       TZ: "America/Los_Angeles"
@@ -78,6 +84,7 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
   hass:
     image: homeassistant/home-assistant:latest
+    restart: always
     network_mode: "host"
     environment:
       TZ: "America/Los_Angeles"
@@ -88,6 +95,7 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
   unifi-video:
     image: pducharme/unifi-video-controller:latest
+    restart: always
     network_mode: "host"
     environment:
       TZ: "America/Los_Angeles"
@@ -101,4 +109,67 @@ services:
       - apparmor:unconfined
     volumes:
       - "/nas/config/unifi-video:/var/lib/unifi-video"
-      - "/nas/config/unifi-video/video:/usr/lib/unifi-video/videos"
+      #- "/nas/config/unifi-video/video:/usr/lib/unifi-video/data/video"
+  pihole:
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      ServerIP: 104.156.103.41
+      TZ: "America/Los_Angeles"
+      WEBPASSWORD: pihole
+      VIRTUAL_HOST: 'xenial'
+      PUID: "1001"
+      PGID: "0"
+    volumes:
+      - "/nas/config/pihole:/etc/pihole"
+      - "/nas/config/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
+  # plexrequests:
+  #   depends_on:
+  #     - plex
+  #   image: linuxserver/plexrequests:latest
+  #   restart: always
+  #   environment:
+  #     TZ: "America/Los_Angeles"
+  #     PUID: "1001"
+  #     PGID: "0"
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - "/nas/config/plexrequests:/config"
+  #     - "/etc/localtime:/etc/localtime:ro"
+  # musicbrainz:
+  #   depends_on:
+  #     - plex
+  #   image: linuxserver/musicbrainz:latest
+  #   restart: always
+  #   environment:
+  #     TZ: "America/Los_Angeles"
+  #     PUID: "1001"
+  #     PGID: "0"
+  #     BRAINZCODE: "rhkBPis5TolxbzQzJtOnWcEgQLC1EQMOo8vbYRC3"
+  #     WEBADDRESS: "172.21.0.3"
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - "/nas/config/musicbrainz:/config"
+  #     - "/nas/plex/music:/data"
+  #     - "/etc/localtime:/etc/localtime:ro"
+  # lazylibrarian:
+  #   depends_on:
+  #     - sabnzbd
+  #   image: linuxserver/lazylibrarian:latest
+  #   restart: always
+  #   environment:
+  #     TZ: "America/Los_Angeles"
+  #     PUID: "1001"
+  #     PGID: "0"
+  #   ports:
+  #     - "5299:5299"
+  #   volumes:
+  #     - "/nas/config/lazylibrarian:/config"
+  #     - "/nas/download/sabnzbd/complete:/downloads"
+  #     - "/nas/plex/books:/books"
