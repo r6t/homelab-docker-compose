@@ -26,7 +26,6 @@ services:
   openvpn:
     image: kylemanna/openvpn:latest
     restart: unless-stopped
-    # network_mode: "host"
     ports:
       - "1194:1194/udp"
     environment:
@@ -43,7 +42,7 @@ services:
       - "80:80"
     restart: unless-stopped
     environment:
-      ServerIP: 104.156.103.41
+      ServerIP: "${LAB_PUBLIC_IP:?err}"
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       WEBPASSWORD: pihole
       VIRTUAL_HOST: 'xenial'
