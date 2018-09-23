@@ -11,9 +11,9 @@ services:
       - "8081:8080"
       - "9090:9090"
     volumes:
-      - "/nas/config/sabnzbd:/config"
-      - "/nas/download/sabnzbd/complete:/downloads"
-      - "/nas/download/sabnzbd/downloading:/incomplete-downloads"
+      - "${LAB_STORAGE:?err}/config/sabnzbd:/config"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/downloading:/incomplete-downloads"
   radarr:
     depends_on:
       - sabnzbd
@@ -26,9 +26,9 @@ services:
     ports:
       - "7878:7878"
     volumes:
-      - "/nas/config/radarr:/config"
-      - "/nas/plex/movies:/movies"
-      - "/nas/download/sabnzbd/complete/movies:/downloads"
+      - "${LAB_STORAGE:?err}/config/radarr:/config"
+      - "${LAB_STORAGE:?err}/plex/movies:/movies"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete/movies:/downloads"
   sonarr:
     depends_on:
       - sabnzbd
@@ -41,9 +41,9 @@ services:
     ports:
       - "8989:8989"
     volumes:
-      - "/nas/config/sonarr:/config"
-      - "/nas/plex/tv:/tv"
-      - "/nas/download/sabnzbd/complete:/downloads"
+      - "${LAB_STORAGE:?err}/config/sonarr:/config"
+      - "${LAB_STORAGE:?err}/plex/tv:/tv"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
   plex:
     image: linuxserver/plex:latest
     restart: always
@@ -54,10 +54,10 @@ services:
       VERSION: latest
     network_mode: "host"
     volumes:
-      - "/nas/config/plex:/config"
-      - "/nas/plex/tv:/data/tvshows"
-      - "/nas/plex/movies:/data/movies"
-      - "/nas/plex/music:/data/music"
+      - "${LAB_STORAGE:?err}/config/plex:/config"
+      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
+      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
+      - "${LAB_STORAGE:?err}/plex/music:/data/music"
   openvpn:
     image: kylemanna/openvpn:latest
     restart: always
@@ -69,7 +69,7 @@ services:
     cap_add:
       - "NET_ADMIN"
     volumes:
-      - "/nas/config/openvpn:/etc/openvpn"
+      - "${LAB_STORAGE:?err}/config/openvpn:/etc/openvpn"
   appdaemon:
     restart: always
     depends_on:
@@ -80,7 +80,7 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - "/nas/config/homeassistant:/conf"
+      - "${LAB_STORAGE:?err}/config/homeassistant:/conf"
       - "/etc/localtime:/etc/localtime:ro"
   hass:
     image: homeassistant/home-assistant:latest
@@ -91,7 +91,7 @@ services:
       PUID: "1001"
       PGID: "0"
     volumes:
-      - "/nas/config/homeassistant:/config"
+      - "${LAB_STORAGE:?err}/config/homeassistant:/config"
       - "/etc/localtime:/etc/localtime:ro"
   unifi-video:
     image: pducharme/unifi-video-controller:latest
@@ -108,8 +108,8 @@ services:
     security_opt:
       - apparmor:unconfined
     volumes:
-      - "/nas/config/unifi-video:/var/lib/unifi-video"
-      #- "/nas/config/unifi-video/video:/usr/lib/unifi-video/data/video"
+      - "${LAB_STORAGE:?err}/config/unifi-video:/var/lib/unifi-video"
+      #- "${LAB_STORAGE:?err}/config/unifi-video/video:/usr/lib/unifi-video/data/video"
   pihole:
     image: pihole/pihole:latest
     ports:
@@ -125,8 +125,8 @@ services:
       PUID: "1001"
       PGID: "0"
     volumes:
-      - "/nas/config/pihole:/etc/pihole"
-      - "/nas/config/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
+      - "${LAB_STORAGE:?err}/config/pihole:/etc/pihole"
+      - "${LAB_STORAGE:?err}/config/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
   # plexrequests:
   #   depends_on:
   #     - plex
@@ -139,7 +139,7 @@ services:
   #   ports:
   #     - "3000:3000"
   #   volumes:
-  #     - "/nas/config/plexrequests:/config"
+  #     - "${LAB_STORAGE:?err}/config/plexrequests:/config"
   #     - "/etc/localtime:/etc/localtime:ro"
   # musicbrainz:
   #   depends_on:
@@ -155,8 +155,8 @@ services:
   #   ports:
   #     - "5000:5000"
   #   volumes:
-  #     - "/nas/config/musicbrainz:/config"
-  #     - "/nas/plex/music:/data"
+  #     - "${LAB_STORAGE:?err}/config/musicbrainz:/config"
+  #     - "${LAB_STORAGE:?err}/plex/music:/data"
   #     - "/etc/localtime:/etc/localtime:ro"
   # lazylibrarian:
   #   depends_on:
@@ -170,6 +170,6 @@ services:
   #   ports:
   #     - "5299:5299"
   #   volumes:
-  #     - "/nas/config/lazylibrarian:/config"
-  #     - "/nas/download/sabnzbd/complete:/downloads"
-  #     - "/nas/plex/books:/books"
+  #     - "${LAB_STORAGE:?err}/config/lazylibrarian:/config"
+  #     - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+  #     - "${LAB_STORAGE:?err}/plex/books:/books"
