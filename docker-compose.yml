@@ -1,75 +1,5 @@
 version: "3"
 services:
-  sabnzbd:
-    image: linuxserver/sabnzbd:latest
-    restart: unless-stopped
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
-      PGID: "0"
-    ports:
-      - "8081:8080"
-      - "9090:9090"
-    volumes:
-      - "${LAB_STORAGE:?err}/config/sabnzbd:/config"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/downloading:/incomplete-downloads"
-  radarr:
-    depends_on:
-      - sabnzbd
-    image: linuxserver/radarr:latest
-    restart: unless-stopped
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
-      PGID: "0"
-    ports:
-      - "7878:7878"
-    volumes:
-      - "${LAB_STORAGE:?err}/config/radarr:/config"
-      - "${LAB_STORAGE:?err}/plex/movies:/movies"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/complete/movies:/downloads"
-  sonarr:
-    depends_on:
-      - sabnzbd
-    image: linuxserver/sonarr:latest
-    restart: unless-stopped
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
-      PGID: "0"
-    ports:
-      - "8989:8989"
-    volumes:
-      - "${LAB_STORAGE:?err}/config/sonarr:/config"
-      - "${LAB_STORAGE:?err}/plex/tv:/tv"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
-  plex:
-    image: linuxserver/plex:latest
-    restart: unless-stopped
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
-      PGID: "0"
-      VERSION: latest
-    network_mode: "host"
-    volumes:
-      - "${LAB_STORAGE:?err}/config/plex:/config"
-      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
-      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
-      - "${LAB_STORAGE:?err}/plex/music:/data/music"
-  openvpn:
-    image: kylemanna/openvpn:latest
-    restart: unless-stopped
-    # network_mode: "host"
-    ports:
-      - "1194:1194/udp"
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-    cap_add:
-      - "NET_ADMIN"
-    volumes:
-      - "${LAB_STORAGE:?err}/config/openvpn:/etc/openvpn"
   appdaemon:
     restart: unless-stopped
     depends_on:
@@ -93,22 +23,18 @@ services:
     volumes:
       - "${LAB_STORAGE:?err}/config/homeassistant:/config"
       - "/etc/localtime:/etc/localtime:ro"
-  unifi-video:
-    image: pducharme/unifi-video-controller:latest
+  openvpn:
+    image: kylemanna/openvpn:latest
     restart: unless-stopped
-    network_mode: "host"
+    # network_mode: "host"
+    ports:
+      - "1194:1194/udp"
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
-      PGID: "0"
-      DEBUG: "1"
     cap_add:
-      - "SYS_ADMIN"
-      - "DAC_READ_SEARCH"
-    security_opt:
-      - apparmor:unconfined
+      - "NET_ADMIN"
     volumes:
-      - "${LAB_STORAGE:?err}/config/unifi-video:/var/lib/unifi-video"
+      - "${LAB_STORAGE:?err}/config/openvpn:/etc/openvpn"
   pihole:
     image: pihole/pihole:latest
     ports:
@@ -126,3 +52,77 @@ services:
     volumes:
       - "${LAB_STORAGE:?err}/config/pihole:/etc/pihole"
       - "${LAB_STORAGE:?err}/config/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
+  plex:
+    image: linuxserver/plex:latest
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1001"
+      PGID: "0"
+      VERSION: latest
+    network_mode: "host"
+    volumes:
+      - "${LAB_STORAGE:?err}/config/plex:/config"
+      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
+      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
+      - "${LAB_STORAGE:?err}/plex/music:/data/music"
+  radarr:
+    depends_on:
+      - sabnzbd
+    image: linuxserver/radarr:latest
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1001"
+      PGID: "0"
+    ports:
+      - "7878:7878"
+    volumes:
+      - "${LAB_STORAGE:?err}/config/radarr:/config"
+      - "${LAB_STORAGE:?err}/plex/movies:/movies"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete/movies:/downloads"
+  sabnzbd:
+    image: linuxserver/sabnzbd:latest
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1001"
+      PGID: "0"
+    ports:
+      - "8081:8080"
+      - "9090:9090"
+    volumes:
+      - "${LAB_STORAGE:?err}/config/sabnzbd:/config"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/downloading:/incomplete-downloads"
+  sonarr:
+    depends_on:
+      - sabnzbd
+    image: linuxserver/sonarr:latest
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1001"
+      PGID: "0"
+    ports:
+      - "8989:8989"
+    volumes:
+      - "${LAB_STORAGE:?err}/config/sonarr:/config"
+      - "${LAB_STORAGE:?err}/plex/tv:/tv"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+  unifi-video:
+    image: pducharme/unifi-video-controller:latest
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1001"
+      PGID: "0"
+      DEBUG: "1"
+    cap_add:
+      - "SYS_ADMIN"
+      - "DAC_READ_SEARCH"
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - "${LAB_STORAGE:?err}/config/unifi-video:/var/lib/unifi-video"
