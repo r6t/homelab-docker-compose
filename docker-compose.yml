@@ -2,9 +2,9 @@ version: "3"
 services:
   sabnzbd:
     image: linuxserver/sabnzbd:latest
-    restart: always
+    restart: unless-stopped
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1001"
       PGID: "0"
     ports:
@@ -18,9 +18,9 @@ services:
     depends_on:
       - sabnzbd
     image: linuxserver/radarr:latest
-    restart: always
+    restart: unless-stopped
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1001"
       PGID: "0"
     ports:
@@ -33,9 +33,9 @@ services:
     depends_on:
       - sabnzbd
     image: linuxserver/sonarr:latest
-    restart: always
+    restart: unless-stopped
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1001"
       PGID: "0"
     ports:
@@ -46,9 +46,9 @@ services:
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
   plex:
     image: linuxserver/plex:latest
-    restart: always
+    restart: unless-stopped
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1001"
       PGID: "0"
       VERSION: latest
@@ -60,23 +60,23 @@ services:
       - "${LAB_STORAGE:?err}/plex/music:/data/music"
   openvpn:
     image: kylemanna/openvpn:latest
-    restart: always
+    restart: unless-stopped
     # network_mode: "host"
     ports:
       - "1194:1194/udp"
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
     cap_add:
       - "NET_ADMIN"
     volumes:
       - "${LAB_STORAGE:?err}/config/openvpn:/etc/openvpn"
   appdaemon:
-    restart: always
+    restart: unless-stopped
     depends_on:
       - hass
     image: acockburn/appdaemon:latest
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
     ports:
       - "5050:5050"
     volumes:
@@ -84,10 +84,10 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
   hass:
     image: homeassistant/home-assistant:latest
-    restart: always
+    restart: unless-stopped
     network_mode: "host"
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1001"
       PGID: "0"
     volumes:
@@ -95,10 +95,10 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
   unifi-video:
     image: pducharme/unifi-video-controller:latest
-    restart: always
+    restart: unless-stopped
     network_mode: "host"
     environment:
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1001"
       PGID: "0"
       DEBUG: "1"
@@ -109,7 +109,6 @@ services:
       - apparmor:unconfined
     volumes:
       - "${LAB_STORAGE:?err}/config/unifi-video:/var/lib/unifi-video"
-      #- "${LAB_STORAGE:?err}/config/unifi-video/video:/usr/lib/unifi-video/data/video"
   pihole:
     image: pihole/pihole:latest
     ports:
@@ -119,7 +118,7 @@ services:
     restart: unless-stopped
     environment:
       ServerIP: 104.156.103.41
-      TZ: "America/Los_Angeles"
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
       WEBPASSWORD: pihole
       VIRTUAL_HOST: 'xenial'
       PUID: "1001"
@@ -127,49 +126,3 @@ services:
     volumes:
       - "${LAB_STORAGE:?err}/config/pihole:/etc/pihole"
       - "${LAB_STORAGE:?err}/config/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
-  # plexrequests:
-  #   depends_on:
-  #     - plex
-  #   image: linuxserver/plexrequests:latest
-  #   restart: always
-  #   environment:
-  #     TZ: "America/Los_Angeles"
-  #     PUID: "1001"
-  #     PGID: "0"
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - "${LAB_STORAGE:?err}/config/plexrequests:/config"
-  #     - "/etc/localtime:/etc/localtime:ro"
-  # musicbrainz:
-  #   depends_on:
-  #     - plex
-  #   image: linuxserver/musicbrainz:latest
-  #   restart: always
-  #   environment:
-  #     TZ: "America/Los_Angeles"
-  #     PUID: "1001"
-  #     PGID: "0"
-  #     BRAINZCODE: "rhkBPis5TolxbzQzJtOnWcEgQLC1EQMOo8vbYRC3"
-  #     WEBADDRESS: "172.21.0.3"
-  #   ports:
-  #     - "5000:5000"
-  #   volumes:
-  #     - "${LAB_STORAGE:?err}/config/musicbrainz:/config"
-  #     - "${LAB_STORAGE:?err}/plex/music:/data"
-  #     - "/etc/localtime:/etc/localtime:ro"
-  # lazylibrarian:
-  #   depends_on:
-  #     - sabnzbd
-  #   image: linuxserver/lazylibrarian:latest
-  #   restart: always
-  #   environment:
-  #     TZ: "America/Los_Angeles"
-  #     PUID: "1001"
-  #     PGID: "0"
-  #   ports:
-  #     - "5299:5299"
-  #   volumes:
-  #     - "${LAB_STORAGE:?err}/config/lazylibrarian:/config"
-  #     - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
-  #     - "${LAB_STORAGE:?err}/plex/books:/books"
