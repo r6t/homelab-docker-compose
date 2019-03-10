@@ -23,7 +23,7 @@ services:
     #   - "8123:8123"
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
+      PUID: "1000"
       PGID: "0"
     volumes:
       - "${LAB_STORAGE:?err}/config/homeassistant:/config"
@@ -36,7 +36,7 @@ services:
 #    restart: unless-stopped
 #    environment:
 #      TZ: "${LAB_TZ:-America/Los_Angeles}"
-#      PUID: "1001"
+#      PUID: "1000"
 #      PGID: "0"
 #      VERSION: latest
 #    ports:
@@ -46,15 +46,15 @@ services:
 #      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
 #      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
 #      - "${LAB_STORAGE:?err}/plex/music:/data/music"
-#    deploy:
-#      placement:
-#        constraints: [node.role == worker]
+    deploy:
+      placement:
+        constraints: [node.role == worker]
         #  emby_ob:
         #    image: emby/embyserver:latest
         #    restart: unless-stopped
         #    environment:
         #      TZ: "${LAB_TZ:-America/Los_Angeles}"
-        #      PUID: "1001"
+        #      PUID: "1000"
         #      PGID: "0"
         #      VERSION: latest
         #    ports:
@@ -113,7 +113,7 @@ services:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       WEBPASSWORD: pihole
       VIRTUAL_HOST: 'xenial'
-      PUID: "1001"
+      PUID: "1000"
       PGID: "0"
     volumes:
       - "${LAB_STORAGE:?err}/config/pihole:/etc/pihole"
@@ -138,10 +138,32 @@ services:
     #   - "5353:5353/udp"
     #   - "1900:1900/udp"
     volumes:
-      - "${LAB_STORAGE:?err}/config/plex:/config"
-      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
-      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
-      - "${LAB_STORAGE:?err}/plex/music:/data/music"
+      - "${LAB_STORAGE:?err}/config/plex/:/config/"
+      - "${LAB_STORAGE:?err}/plex/:/data/"
+#    deploy:
+#      placement:
+#        constraints: [node.role == worker]
+#  plex:
+#    image: linuxserver/plex:latest
+#    restart: unless-stopped
+#    environment:
+#      TZ: "${LAB_TZ:-America/Los_Angeles}"
+#      PUID: "1000"
+#      PGID: "0"
+#      VERSION: latest
+#    network_mode: "host"
+#    # ports:
+#    #   - "32400:32400"
+#    #   - "32400:32400/udp"
+#    #   - "32469:32469"
+#    #   - "32469:32469/udp"
+#    #   - "5353:5353/udp"
+#    #   - "1900:1900/udp"
+#    volumes:
+#      - "${LAB_STORAGE:?err}/config/plex:/config"
+#      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
+#      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
+#      - "${LAB_STORAGE:?err}/plex/music:/data/music"
 #    deploy:
 #      placement:
 #        constraints: [node.role == worker]
@@ -152,7 +174,7 @@ services:
     restart: unless-stopped
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
+      PUID: "1000"
       PGID: "0"
     ports:
       - "7878:7878"
@@ -187,7 +209,7 @@ services:
     restart: unless-stopped
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
+      PUID: "1000"
       PGID: "0"
     ports:
       - "8989:8989"
@@ -203,7 +225,7 @@ services:
     restart: unless-stopped
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
+      PUID: "1000"
       PGID: "0"
     ports:
       - "8384:8384"
@@ -229,7 +251,7 @@ services:
       - "7447:7447"
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
+      PUID: "1000"
       PGID: "0"
       DEBUG: "1"
     cap_add:
