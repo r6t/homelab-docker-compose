@@ -121,30 +121,30 @@ services:
     deploy:
       placement:
         constraints: [node.role == manager]
-        #  plex:
-        #    image: linuxserver/plex:latest
-        #    restart: unless-stopped
-        #    environment:
-        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
-        #      PUID: "1001"
-        #      PGID: "0"
-        #      VERSION: latest
-        #    network_mode: "host"
-        #    # ports:
-        #    #   - "32400:32400"
-        #    #   - "32400:32400/udp"
-        #    #   - "32469:32469"
-        #    #   - "32469:32469/udp"
-        #    #   - "5353:5353/udp"
-        #    #   - "1900:1900/udp"
-        #    volumes:
-        #      - "${LAB_STORAGE:?err}/config/plex:/config"
-        #      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
-        #      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
-        #      - "${LAB_STORAGE:?err}/plex/music:/data/music"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
+  plex:
+    image: linuxserver/plex:latest
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1001"
+      PGID: "0"
+      VERSION: latest
+    network_mode: "host"
+    # ports:
+    #   - "32400:32400"
+    #   - "32400:32400/udp"
+    #   - "32469:32469"
+    #   - "32469:32469/udp"
+    #   - "5353:5353/udp"
+    #   - "1900:1900/udp"
+    volumes:
+      - "${LAB_STORAGE:?err}/config/plex:/config"
+      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
+      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
+      - "${LAB_STORAGE:?err}/plex/music:/data/music"
+#    deploy:
+#      placement:
+#        constraints: [node.role == worker]
   radarr:
     depends_on:
       - sabnzbd
