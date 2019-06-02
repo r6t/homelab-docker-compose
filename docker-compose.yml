@@ -124,24 +124,28 @@ services:
     environment:
       ServerIP: "${LAB_PUBLIC_IP:?err}"
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      WEBPASSWORD: pihole
-      VIRTUAL_HOST: 'xenial'
+      WEBPASSWORD: "${PH_PASS}"
+      VIRTUAL_HOST: "${HOSTNAME}"
       PUID: "1000"
       PGID: "0"
     volumes:
-      - "${LAB_STORAGE:?err}/config/pihole:/etc/pihole"
-      - "${LAB_STORAGE:?err}/config/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
+      - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
+      - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
     deploy:
       placement:
         constraints: [node.role == manager]
   plex:
-    image: linuxserver/plex:latest
+    image: plexinc/pms-docker:latest
     restart: unless-stopped
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1001"
+      PUID: "1000"
+      PLEX_UID: "1000"
       PGID: "0"
+      PLEX_GID: "0"
       VERSION: latest
+      PLEX_CLAIM: ${PLEX_CLAIM_ID}
+      ADVERTISE_IP: http://172.21.0.99:32400
     network_mode: "host"
     # ports:
     #   - "32400:32400"
@@ -233,20 +237,20 @@ services:
     deploy:
       placement:
         constraints: [node.role == worker]
-  syncthing:
-    image: linuxserver/syncthing:latest
-    restart: unless-stopped
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1000"
-      PGID: "0"
-    ports:
-      - "8384:8384"
-      - "22000:22000"
-      - "21027:21027/udp"
-    volumes:
-      - "${CONFIG_STORAGE:?err}/syncthing:/config"
-      - "${LAB_STORAGE:?err}/misc/syncthing:/data"
+        #  syncthing:
+        #    image: linuxserver/syncthing:latest
+        #    restart: unless-stopped
+        #    environment:
+        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
+        #      PUID: "1000"
+        #      PGID: "0"
+        #    ports:
+        #      - "8388:8384"
+        #      - "22000:22000"
+        #      - "21027:21027/udp"
+        #    volumes:
+        #      - "${CONFIG_STORAGE:?err}/syncthing:/config"
+        #      - "${LAB_STORAGE:?err}/misc/syncthing:/data"
 #  unifi-video:
 #    image: pducharme/unifi-video-controller:latest
 #    restart: unless-stopped
