@@ -1,6 +1,6 @@
 version: "3"
 services:
-  appdaemon:
+  appd:
     restart: unless-stopped
     depends_on:
       - hass
@@ -12,9 +12,9 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/homeassistant:/conf"
       - "/etc/localtime:/etc/localtime:ro"
-    deploy:
-      placement:
-        constraints: [node.role == worker]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == worker]
   hass:
     image: homeassistant/home-assistant:latest
     restart: unless-stopped
@@ -28,9 +28,9 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/homeassistant:/config"
       - "/etc/localtime:/etc/localtime:ro"
-    deploy:
-      placement:
-        constraints: [node.role == worker]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == worker]
   headphones:
     image: linuxserver/headphones
     environment:
@@ -75,9 +75,9 @@ services:
     volumes:
       - "${LAB_STORAGE:?err}/config/embyt:/config"
       - "${LAB_STORAGE:?err}/download/misc/tob:/mnt/share1"
-    deploy:
-      placement:
-        constraints: [node.role == worker]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == worker]
   # letsencrypt-nginx:
   #   image: nginx:latest
   #   ports:
@@ -111,9 +111,9 @@ services:
       - "NET_ADMIN"
     volumes:
       - "${CONFIG_STORAGE:?err}/openvpn:/etc/openvpn"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == manager]
   pihole:
     image: pihole/pihole:latest
     ports:
@@ -131,9 +131,9 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
       - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
-    deploy:
-      placement:
-        constraints: [node.role == manager]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == manager]
   plex:
     image: plexinc/pms-docker:latest
     restart: unless-stopped
@@ -199,9 +199,9 @@ services:
       - "${CONFIG_STORAGE:?err}/radarr:/config"
       - "${LAB_STORAGE:?err}/plex/movies:/movies"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete/movies:/downloads"
-    deploy:
-      placement:
-        constraints: [node.role == worker]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == worker]
   sabnzbd:
     image: linuxserver/sabnzbd:latest
     restart: unless-stopped
@@ -216,9 +216,9 @@ services:
       - "${CONFIG_STORAGE:?err}/sabnzbd:/config"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
       - "${LAB_STORAGE:?err}/download/sabnzbd/downloading:/incomplete-downloads"
-    deploy:
-      placement:
-        constraints: [node.role == worker]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == worker]
   sonarr:
     depends_on:
       - sabnzbd
@@ -234,9 +234,9 @@ services:
       - "${CONFIG_STORAGE:?err}/sonarr:/config"
       - "${LAB_STORAGE:?err}/plex/tv:/tv"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
-    deploy:
-      placement:
-        constraints: [node.role == worker]
+        #    deploy:
+        #      placement:
+        #        constraints: [node.role == worker]
         #  syncthing:
         #    image: linuxserver/syncthing:latest
         #    restart: unless-stopped
