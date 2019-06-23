@@ -12,56 +12,7 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/homeassistant:/conf"
       - "/etc/localtime:/etc/localtime:ro"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
-  hass:
-    image: homeassistant/home-assistant:latest
-    restart: unless-stopped
-    network_mode: "host"
-    # ports:
-    #   - "8123:8123"
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1000"
-      PGID: "0"
-    volumes:
-      - "${CONFIG_STORAGE:?err}/homeassistant:/config"
-      - "/etc/localtime:/etc/localtime:ro"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
-  headphones:
-    image: linuxserver/headphones
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1000"
-      PGID: "0" 
-    volumes:
-      - "${CONFIG_STORAGE:?err}/headphones:/config"
-      - "${LAB_STORAGE:?err}/plex/music:/music"
-      - "${LAB_STORAGE:?err}/plex/music_unsorted:/sort"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
-    ports:
-      - "8181:8181"
-#  emby:
-#    image: emby/embyserver:latest
-#    restart: unless-stopped
-#    environment:
-#      TZ: "${LAB_TZ:-America/Los_Angeles}"
-#      PUID: "1000"
-#      PGID: "0"
-#      VERSION: latest
-#    ports:
-#      - "8096:8096/tcp"
-#    volumes:
-#      - "${LAB_STORAGE:?err}/config/emby:/config"
-#      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
-#      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
-#      - "${LAB_STORAGE:?err}/plex/music:/data/music"
-#    deploy:
-#      placement:
-#        constraints: [node.role == worker]
+
   embyt:
     image: emby/embyserver:latest
     restart: unless-stopped
@@ -75,31 +26,35 @@ services:
     volumes:
       - "${LAB_STORAGE:?err}/config/embyt:/config"
       - "${LAB_STORAGE:?err}/download/misc/tob:/mnt/share1"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
-  # letsencrypt-nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - "85:80"
-  #   volumes:
-  #     - "${LAB_STORAGE:?err}/config/certbot/nginx.conf:/etc/nginx/conf.d/default.conf"
-  #     - "${LAB_STORAGE:?err}/config/certbot/letsencrypt-site:/usr/share/nginx/html"
-   # networks:
-   #   - certbot-network
-  # nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - "88:80"
-  #     - "443:443"
-  #   volumes:
-  #     - "${LAB_STORAGE:?err}/config/nginx/main.conf:/etc/nginx/conf.d/default.conf"
-  #     - "${LAB_STORAGE:?err}/config/nginx/main-site:/usr/share/nginx/html"
-  #     - "${LAB_STORAGE:?err}/config/nginx/dh-param/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem"
-  #     - "${LAB_STORAGE:?err}/config/certbot/etc/letsencrypt/live/sea.r6t.io/fullchain.pem:/etc/letsencrypt/live/sea.r6t.io/fullchain.pem"
-  #     - "${LAB_STORAGE:?err}/config/certbot/etc/letsencrypt/live/sea.r6t.io/privkey.pem:/etc/letsencrypt/live/sea.r6t.io/privkey.pem"
-   # networks:
-   #   - certbot-network
+
+  hass:
+    image: homeassistant/home-assistant:latest
+    restart: unless-stopped
+    network_mode: "host"
+    # ports:
+    #   - "8123:8123"
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1000"
+      PGID: "0"
+    volumes:
+      - "${CONFIG_STORAGE:?err}/homeassistant:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+
+  headphones:
+    image: linuxserver/headphones
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1000"
+      PGID: "0" 
+    volumes:
+      - "${CONFIG_STORAGE:?err}/headphones:/config"
+      - "${LAB_STORAGE:?err}/plex/music:/music"
+      - "${LAB_STORAGE:?err}/plex/music_unsorted:/sort"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+    ports:
+      - "8181:8181"
+
   openvpn:
     image: kylemanna/openvpn:latest
     restart: unless-stopped
@@ -114,6 +69,7 @@ services:
         #    deploy:
         #      placement:
         #        constraints: [node.role == manager]
+
   pihole:
     image: pihole/pihole:latest
     ports:
@@ -131,9 +87,7 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
       - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == manager]
+
   plex:
     image: plexinc/pms-docker:latest
     restart: unless-stopped
@@ -157,33 +111,7 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/plex:/config/"
       - "${LAB_STORAGE:?err}/plex/:/data/"
-#    deploy:
-#      placement:
-#        constraints: [node.role == worker]
-#  plex:
-#    image: linuxserver/plex:latest
-#    restart: unless-stopped
-#    environment:
-#      TZ: "${LAB_TZ:-America/Los_Angeles}"
-#      PUID: "1000"
-#      PGID: "0"
-#      VERSION: latest
-#    network_mode: "host"
-#    # ports:
-#    #   - "32400:32400"
-#    #   - "32400:32400/udp"
-#    #   - "32469:32469"
-#    #   - "32469:32469/udp"
-#    #   - "5353:5353/udp"
-#    #   - "1900:1900/udp"
-#    volumes:
-#      - "${LAB_STORAGE:?err}/config/plex:/config"
-#      - "${LAB_STORAGE:?err}/plex/tv:/data/tvshows"
-#      - "${LAB_STORAGE:?err}/plex/movies:/data/movies"
-#      - "${LAB_STORAGE:?err}/plex/music:/data/music"
-#    deploy:
-#      placement:
-#        constraints: [node.role == worker]
+ 
   radarr:
     depends_on:
       - sabnzbd
@@ -199,9 +127,7 @@ services:
       - "${CONFIG_STORAGE:?err}/radarr:/config"
       - "${LAB_STORAGE:?err}/plex/movies:/movies"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete/movies:/downloads"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
+
   sabnzbd:
     image: linuxserver/sabnzbd:latest
     restart: unless-stopped
@@ -216,9 +142,7 @@ services:
       - "${CONFIG_STORAGE:?err}/sabnzbd:/config"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
       - "${LAB_STORAGE:?err}/download/sabnzbd/downloading:/incomplete-downloads"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
+
   sonarr:
     depends_on:
       - sabnzbd
@@ -234,53 +158,3 @@ services:
       - "${CONFIG_STORAGE:?err}/sonarr:/config"
       - "${LAB_STORAGE:?err}/plex/tv:/tv"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == worker]
-        #  syncthing:
-        #    image: linuxserver/syncthing:latest
-        #    restart: unless-stopped
-        #    environment:
-        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
-        #      PUID: "1000"
-        #      PGID: "0"
-        #    ports:
-        #      - "8388:8384"
-        #      - "22000:22000"
-        #      - "21027:21027/udp"
-        #    volumes:
-        #      - "${CONFIG_STORAGE:?err}/syncthing:/config"
-        #      - "${LAB_STORAGE:?err}/misc/syncthing:/data"
-#  unifi-video:
-#    image: pducharme/unifi-video-controller:latest
-#    restart: unless-stopped
-#    # network_mode: "host"
-#    ports:
-#      - "10001:10001"
-#      - "1935:1935"
-#      - "6666:6666"
-#      - "7080:7080"
-#      - "7442:7442"
-#      - "7443:7443"
-#      - "7444:7444"
-#      - "7445:7445"
-#      - "7446:7446"
-#      - "7447:7447"
-#    environment:
-#      TZ: "${LAB_TZ:-America/Los_Angeles}"
-#      PUID: "1000"
-#      PGID: "0"
-#      DEBUG: "1"
-#    cap_add:
-#      - "SYS_ADMIN"
-#      - "DAC_READ_SEARCH"
-#    security_opt:
-#      - apparmor:unconfined
-#    volumes:
-#      - "${CONFIG_STORAGE:?err}/unifi-video:/var/lib/unifi-video"
-#    deploy:
-#      placement:
-#        constraints: [node.role == worker]
-  #networks:
-  #  certbot-network:
-  #    driver: bridge
