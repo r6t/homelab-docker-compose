@@ -13,19 +13,19 @@ services:
       - "${CONFIG_STORAGE:?err}/homeassistant:/conf"
       - "/etc/localtime:/etc/localtime:ro"
 
-  embyt:
-    image: emby/embyserver:latest
-    restart: unless-stopped
-    environment:
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "1000"
-      PGID: "0"
-      VERSION: latest
-    ports:
-      - "8096:8096/tcp"
-    volumes:
-      - "${LAB_STORAGE:?err}/config/embyt:/config"
-      - "${LAB_STORAGE:?err}/download/misc/tob:/mnt/share1"
+        #  embyt:
+        #    image: emby/embyserver:latest
+        #    restart: unless-stopped
+        #    environment:
+        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
+        #      PUID: "1000"
+        #      PGID: "0"
+        #      VERSION: latest
+        #    ports:
+        #      - "8096:8096/tcp"
+        #    volumes:
+        #      - "${LAB_STORAGE:?err}/config/embyt:/config"
+        #      - "${LAB_STORAGE:?err}/download/misc/tob:/mnt/share1"
 
   hass:
     image: homeassistant/home-assistant:latest
@@ -36,24 +36,39 @@ services:
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1000"
-      PGID: "0"
+      PGID: "1000"
     volumes:
       - "${CONFIG_STORAGE:?err}/homeassistant:/config"
       - "/etc/localtime:/etc/localtime:ro"
 
-  headphones:
-    image: linuxserver/headphones
+        #  nextcloud:
+        #    image: linuxserver/nextcloud
+        #    restart: unless-stopped
+        #    environment:
+        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
+        #      PUID: "1000"
+        #      PGID: "1000" 
+        #    volumes:
+        #      - "${LAB_STORAGE:?err}/nextcloud/config:/config"
+        #      - "${LAB_STORAGE:?err}/nextcloud/data:/data"
+        #    ports:
+        #      - "443:443"
+
+  lidarr:
+    depends_on:
+      - sabnzbd
+    image: linuxserver/lidarr:latest
+    restart: unless-stopped
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1000"
-      PGID: "0" 
-    volumes:
-      - "${CONFIG_STORAGE:?err}/headphones:/config"
-      - "${LAB_STORAGE:?err}/plex/music:/music"
-      - "${LAB_STORAGE:?err}/plex/music_unsorted:/sort"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+      PGID: "1000"
     ports:
-      - "8181:8181"
+      - "8686:8686"
+    volumes:
+      - "${CONFIG_STORAGE:?err}/lidarr:/config"
+      - "${LAB_STORAGE:?err}/plex/music:/music"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
 
   openvpn:
     image: kylemanna/openvpn:latest
@@ -70,24 +85,26 @@ services:
         #      placement:
         #        constraints: [node.role == manager]
 
-  pihole:
-    image: pihole/pihole:latest
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "80:80"
-    restart: unless-stopped
-    environment:
-      ServerIP: "${LAB_PUBLIC_IP:?err}"
-      TZ: "${LAB_TZ:-America/Los_Angeles}"
-      WEBPASSWORD: "${PH_PASS}"
-      VIRTUAL_HOST: "${HOSTNAME}"
-      PUID: "1000"
-      PGID: "0"
-    volumes:
-      - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
-      - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
-
+        #  pihole:
+        #    image: pihole/pihole:latest
+        #    ports:
+        #      - "53:53/tcp"
+        #      - "53:53/udp"
+        #      - "67:67/udp"
+        #      - "80:80/tcp"
+        #      - "443:443/tcp"
+        #    restart: unless-stopped
+        #    environment:
+        #      ServerIP: "${LAB_PUBLIC_IP:?err}"
+        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
+        #      WEBPASSWORD: "${PH_PASS}"
+        #      VIRTUAL_HOST: "${HOSTNAME}"
+        #      PUID: "1000"
+        #      PGID: "0"
+        #    volumes:
+        #      - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
+        #      - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
+        #
   plex:
     image: plexinc/pms-docker:latest
     restart: unless-stopped
@@ -95,11 +112,11 @@ services:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1000"
       PLEX_UID: "1000"
-      PGID: "0"
-      PLEX_GID: "0"
+      PGID: "1000"
+      PLEX_GID: "1000"
       VERSION: latest
       PLEX_CLAIM: ${PLEX_CLAIM_ID}
-      ADVERTISE_IP: http://172.21.0.99:32400
+      ADVERTISE_IP: http://${LOCAL_IP}:32400
     network_mode: "host"
     # ports:
     #   - "32400:32400"
@@ -120,7 +137,7 @@ services:
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1000"
-      PGID: "0"
+      PGID: "1000"
     ports:
       - "7878:7878"
     volumes:
@@ -133,8 +150,8 @@ services:
     restart: unless-stopped
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
-      PUID: "0"
-      PGID: "0"
+      PUID: "1000"
+      PGID: "1000"
     ports:
       - "8081:8080"
       - "9090:9090"
@@ -151,7 +168,7 @@ services:
     environment:
       TZ: "${LAB_TZ:-America/Los_Angeles}"
       PUID: "1000"
-      PGID: "0"
+      PGID: "1000"
     ports:
       - "8989:8989"
     volumes:
