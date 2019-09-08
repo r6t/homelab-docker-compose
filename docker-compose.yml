@@ -13,20 +13,6 @@ services:
       - "${CONFIG_STORAGE:?err}/homeassistant:/conf"
       - "/etc/localtime:/etc/localtime:ro"
 
-        #  embyt:
-        #    image: emby/embyserver:latest
-        #    restart: unless-stopped
-        #    environment:
-        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
-        #      PUID: "1000"
-        #      PGID: "0"
-        #      VERSION: latest
-        #    ports:
-        #      - "8096:8096/tcp"
-        #    volumes:
-        #      - "${LAB_STORAGE:?err}/config/embyt:/config"
-        #      - "${LAB_STORAGE:?err}/download/misc/tob:/mnt/share1"
-
   hass:
     image: homeassistant/home-assistant:latest
     restart: unless-stopped
