@@ -13,6 +13,39 @@ services:
       - "${CONFIG_STORAGE:?err}/homeassistant:/conf"
       - "/etc/localtime:/etc/localtime:ro"
 
+  deconz:
+    image: marthoc/deconz
+    restart: unless-stopped
+    devices:
+      - /dev/ttyACM0
+    environment:
+      DECONZ_WEB_PORT: 88
+      DECONZ_WS_PORT: 448
+      DEBUG_INFO: 1
+      DEBUG_APS: 0
+      DEBUG_ZCL: 0
+      DEBUG_ZDP: 0
+      DEBUG_OTAU: 0
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1000"
+      PGID: "1000"
+    volumes:
+      - "${CONFIG_STORAGE:?err}/deconz:/root/.local/share/dresden-elektronik/deCONZ"
+    network_mode: host
+
+  emby:
+    image: linuxserver/emby:latest
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1000"
+      PGID: "1000"
+    ports:
+      - "8096:8096/tcp"
+    volumes:
+      - "${CONFIG_STORAGE:?err}/emby:/config"
+      - "${LAB_STORAGE:?err}/emby:/data"
+
   hass:
     image: homeassistant/home-assistant:latest
     restart: unless-stopped
@@ -67,30 +100,25 @@ services:
       - "NET_ADMIN"
     volumes:
       - "${CONFIG_STORAGE:?err}/openvpn:/etc/openvpn"
-        #    deploy:
-        #      placement:
-        #        constraints: [node.role == manager]
 
-        #  pihole:
-        #    image: pihole/pihole:latest
-        #    ports:
-        #      - "53:53/tcp"
-        #      - "53:53/udp"
-        #      - "67:67/udp"
-        #      - "80:80/tcp"
-        #      - "443:443/tcp"
-        #    restart: unless-stopped
-        #    environment:
-        #      ServerIP: "${LAB_PUBLIC_IP:?err}"
-        #      TZ: "${LAB_TZ:-America/Los_Angeles}"
-        #      WEBPASSWORD: "${PH_PASS}"
-        #      VIRTUAL_HOST: "${HOSTNAME}"
-        #      PUID: "1000"
-        #      PGID: "0"
-        #    volumes:
-        #      - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
-        #      - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
-        #
+  pihole:
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    restart: unless-stopped
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      WEBPASSWORD: "${PH_PASS}"
+      PUID: "1000"
+      PGID: "1000"
+    volumes:
+      - "${CONFIG_STORAGE:?err}/pihole:/etc/pihole"
+      - "${CONFIG_STORAGE:?err}/pihole/pihole_dnsmasq:/etc/dnsmasq.d"
+
   plex:
     image: plexinc/pms-docker:latest
     restart: unless-stopped
@@ -129,7 +157,7 @@ services:
     volumes:
       - "${CONFIG_STORAGE:?err}/radarr:/config"
       - "${LAB_STORAGE:?err}/plex/movies:/movies"
-      - "${LAB_STORAGE:?err}/download/sabnzbd/complete/movies:/downloads"
+      - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
 
   sabnzbd:
     image: linuxserver/sabnzbd:latest
@@ -161,3 +189,30 @@ services:
       - "${CONFIG_STORAGE:?err}/sonarr:/config"
       - "${LAB_STORAGE:?err}/plex/tv:/tv"
       - "${LAB_STORAGE:?err}/download/sabnzbd/complete:/downloads"
+        
+  unifi-video:
+    image: pducharme/unifi-video-controller:3.10.6
+    restart: unless-stopped
+    ports:
+      - "10001:10001"
+      - "1935:1935"
+      - "6666:6666"
+      - "7080:7080"
+      - "7442:7442"
+      - "7443:7443"
+      - "7444:7444"
+      - "7445:7445"
+      - "7446:7446"
+      - "7447:7447"
+    environment:
+      TZ: "${LAB_TZ:-America/Los_Angeles}"
+      PUID: "1000"
+      PGID: "1000"
+      DEBUG: "1"
+    cap_add:
+      - "SYS_ADMIN"
+      - "DAC_READ_SEARCH"
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - "${CONFIG_STORAGE:?err}/unifi-video:/var/lib/unifi-video"
